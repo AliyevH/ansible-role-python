@@ -1,0 +1,4 @@
+---
+# vars file for python
+PYTHON_VERSION: 3.8.5
+PYTHON_DIR: /home/python

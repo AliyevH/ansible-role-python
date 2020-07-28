@@ -1,0 +1,54 @@
+- name: Upgrade all packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: install the 'Development tools' package group
+  yum:
+    name: '@Development tools'
+    state: present
+
+- name: Install the latest version of openssl-devel, bzip2-devel, libffi-devel
+  yum:
+    name:
+      - openssl-devel
+      - bzip2-devel
+      - libffi-devel
+    state: latest
+
+# - name: Confirm gcc is available
+#   assert:
+#     that:
+#       - gcc --version 
+#     fail_msg: gcc is not installed
+#     success_msg: gcc is installed
+
+- name: Create a directory if it does not exist
+  file:
+    path: "{{ PYTHON_DIR }}"
+    state: directory
+
+- name: Extract python.tgz into "{{ PYTHON_DIR }}"
+  tags: install
+  unarchive:
+    src: https://www.python.org/ftp/python/{{ PYTHON_VERSION }}/Python-{{ PYTHON_VERSION }}.tgz
+    dest: "{{ PYTHON_DIR }}"
+    remote_src: yes
+
+- name: Configuring Python source with optimization enabled
+  command: "./configure --enable-optimizations"
+  args:
+    chdir: "{{ PYTHON_DIR }}/Python-{{ PYTHON_VERSION }}"
+
+- name: Install Python
+  shell: make -j 4
+  args:
+    chdir: "{{ PYTHON_DIR }}/Python-{{ PYTHON_VERSION }}"
+
+- name: Install Python altinstall
+  shell: make altinstall
+  args:
+    chdir: "{{ PYTHON_DIR }}/Python-{{ PYTHON_VERSION }}"
+
+
+
